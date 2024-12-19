@@ -11,7 +11,6 @@ import java.util.HashMap; // For storing course names and their corresponding co
 
 public class UniFolderCreationTool {
     // TODO Sanitise user input before storing it in the variables
-    private String name;
     private String degree;
     private HashMap<String, String> courses = new HashMap<>();
     private String major;
@@ -24,67 +23,84 @@ public class UniFolderCreationTool {
         System.out.println("Kyle's University Folder Creation Tool");
         System.out.println("---------------------------------------------");
         System.out.println("Please enter the following details to create a folder structure for your university semester:");
-        System.out.println("\nEnter your degree name:");
-        toolInstance.degree = console.nextLine();
-        System.out.println("\nDo you have a major? (Y/N)");
-        String majorYNResponse = console.nextLine();
-        if (majorYNResponse.equalsIgnoreCase("Y")) {
-            System.out.println("\nEnter your major:");
-            toolInstance.major = console.nextLine();
-        }
-        System.out.println("\nEnter the year you want to create the folder structure for:");
-        toolInstance.year = console.nextLine();
-        System.out.println("\nEnter the semester:");
-        toolInstance.semester = console.nextLine();
-        System.out.println("\nEnter number of weeks in the semester:");
-        toolInstance.weeks = console.nextInt();
-        console.nextLine(); // Consume the newline character
-        System.out.println("\nSo far, the parent folder will be named as follows:");
+        String verifyParentFolderResponse;
         String parentFolderName;
-        if (majorYNResponse.equalsIgnoreCase("Y")) {
-            parentFolderName = toolInstance.year + " - " + toolInstance.degree + " - " + toolInstance.major + " (Semester " + toolInstance.semester + ")";
-            System.out.println("\"" + parentFolderName + "\"");
-        } else {
-            parentFolderName = toolInstance.year + " - " + toolInstance.degree + " (Semester " + toolInstance.semester + ")";
-            System.out.println("\"" + parentFolderName + "\"");
-        }
-        System.out.println("Is this correct? (Y/N)"); //TODO Add a loop to allow the user to re-enter the details if they are incorrect
-        String userVerifyParentFolder = console.nextLine();
-        System.out.println("\nEnter the number of courses you are taking this semester:");
-        int numCourses = console.nextInt();
-        console.nextLine(); // Consume the newline character
-        for (int i = 0; i < numCourses; i++) {
-            System.out.println("\nEnter the name of course " + (i + 1) + ":");
-            String courseName = console.nextLine();
-            System.out.println("Enter the course code for " + courseName + ":");
-            String courseCode = console.nextLine().toUpperCase();
-            toolInstance.courses.put(courseName, courseCode);
-        }
-        System.out.println("\nThe folders created based on what you have entered will be:");
-        for (String courseName : toolInstance.courses.keySet()) {
-            System.out.println("\"" + toolInstance.courses.get(courseName) + " - " + courseName + "\"");
-        }
-        System.out.println("Is this correct? (Y/N)"); //TODO Add a loop to allow the user to re-enter the details if they are incorrect
-        String userVerifyCourseFolders = console.nextLine();
+        do {
+            System.out.println("\nEnter your degree name:");
+            toolInstance.degree = console.nextLine();
+            System.out.println("\nDo you have a major? (Y/N)");
+            String majorYNResponse = console.nextLine();
+            if (majorYNResponse.equalsIgnoreCase("Y")) {
+                System.out.println("\nEnter your major:");
+                toolInstance.major = console.nextLine();
+            }
+            System.out.println("\nEnter the year you want to create the folder structure for:");
+            toolInstance.year = console.nextLine();
+            System.out.println("\nEnter the semester:");
+            toolInstance.semester = console.nextLine();
+            System.out.println("\nEnter number of weeks in the semester:");
+            toolInstance.weeks = console.nextInt();
+            console.nextLine(); // Consume the newline character
+            System.out.println("\nSo far, the parent folder will be named as follows:");
+            if (majorYNResponse.equalsIgnoreCase("Y")) {
+                parentFolderName = toolInstance.year + " - " + toolInstance.degree + " - " + toolInstance.major + " (Semester " + toolInstance.semester + ")";
+                System.out.println("\"" + parentFolderName + "\"");
+            } else {
+                parentFolderName = toolInstance.year + " - " + toolInstance.degree + " (Semester " + toolInstance.semester + ")";
+                System.out.println("\"" + parentFolderName + "\"");
+            }
+            System.out.println("Is this correct? (Y/N)");
+            verifyParentFolderResponse = console.nextLine();
+        } while (verifyParentFolderResponse.equalsIgnoreCase("N"));
+
+        String verifyCourseFolderResponse;
+        do {
+            System.out.println("\nEnter the number of courses you are taking this semester:");
+            int numCourses = console.nextInt();
+            console.nextLine(); // Consume the newline character
+            for (int i = 0; i < numCourses; i++) {
+                System.out.println("\nEnter the name of course " + (i + 1) + ":");
+                String courseName = console.nextLine();
+                System.out.println("Enter the course code for " + courseName + ":");
+                String courseCode = console.nextLine().toUpperCase();
+                toolInstance.courses.put(courseName, courseCode);
+            }
+            System.out.println("\nThe folders created based on what you have entered will be:");
+            for (String courseName : toolInstance.courses.keySet()) {
+                System.out.println("\"" + toolInstance.courses.get(courseName) + " - " + courseName + "\"");
+            }
+            System.out.println("Is this correct? (Y/N)");
+            verifyCourseFolderResponse = console.nextLine();
+        } while (verifyCourseFolderResponse.equalsIgnoreCase("N"));
+
         String oneDriveEnvPath = System.getenv("OneDriveCommercial"); // First attempt to find the explicit OneDrive Commercial path
         String userPath = null; // User's manually entered path if OneDrive is not found or preferred
         if (oneDriveEnvPath == null) {
             oneDriveEnvPath = System.getenv("OneDrive"); // Fallback to the generic OneDrive path if the commercial path is not found
             if (oneDriveEnvPath == null) {
-                System.out.println("Please enter the path to where you would like to create the folders:");
+                System.out.println("Please enter the path to where you would like to create the folders (i.e., C:/Users/me/OneDrive):");
                 userPath = console.nextLine();
             }
         }
         Path rootPath = null; // The path where the parent folder will be created
+        String useOneDrivePathResponse;
         if (oneDriveEnvPath != null) {
             System.out.println("\nOneDrive path found at: " + oneDriveEnvPath);
-            System.out.println("Would you like to create the folders here? (Y/N)"); //TODO Add a loop to allow the user to manually enter path if they do not want to use the OneDrive path
-            String userOneDriveYNResponse = console.nextLine();
-            rootPath = Paths.get(oneDriveEnvPath); // Create a Path object from the OneDrive path
+            System.out.println("Would you like to create the folders here? (Y/N)");
+            useOneDrivePathResponse = console.nextLine();
+            if (useOneDrivePathResponse.equalsIgnoreCase("Y")) {
+                rootPath = Paths.get(oneDriveEnvPath); // Set the Path object value from the user's path
+            } else if (useOneDrivePathResponse.equalsIgnoreCase("N")) {
+                System.out.println("Please enter the path to where you would like to create the folders:");
+                userPath = console.nextLine();
+                rootPath = Paths.get(userPath); // Set the Path object value from the user's path
+            }
+            else {
+                System.out.println("Invalid response. Please enter Y or N.");
+            }
         }
-        if (userPath != null) {
-            rootPath = Paths.get(userPath); // Create a Path object from the user's path
-            System.out.println(rootPath);
+        else {
+            rootPath = Paths.get(userPath); // Set the Path object value from the user's path
         }
         Path parentFolderPath = rootPath.resolve(parentFolderName); // Create a Path object for the parent folder
         try {
@@ -110,6 +126,8 @@ public class UniFolderCreationTool {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        console.close();
+
         // TODO Convert to a GUI program
         // TODO OneDrive folder colour changing?
     }
