@@ -23,5 +23,9 @@ Year - Degree - Major (Semester)
     ├── Week x
 ```
 
+## Running the Program
 
+1. Download/Clone repository
+2. If on a Windows-based computer, execute run.bat (Java is required to be installed for this)
+3. Follow program instructions until end
 
