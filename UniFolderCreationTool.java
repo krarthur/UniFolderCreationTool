@@ -10,7 +10,6 @@ import java.nio.file.Files; // Utility class for file/directory operations
 import java.util.HashMap; // For storing course names and their corresponding codes
 
 public class UniFolderCreationTool {
-    // TODO Sanitise user input before storing it in the variables
     private String degree;
     private HashMap<String, String> courses = new HashMap<>();
     private String major;
@@ -38,9 +37,19 @@ public class UniFolderCreationTool {
             toolInstance.year = console.nextLine();
             System.out.println("\nEnter the semester:");
             toolInstance.semester = console.nextLine();
-            System.out.println("\nEnter number of weeks in the semester:");
-            toolInstance.weeks = console.nextInt();
-            console.nextLine(); // Consume the newline character
+            do {
+                System.out.println("\nEnter number of weeks in the semester:");
+                // Enforce int input for weeks:
+                while (!console.hasNextInt()) {
+                    System.out.println("Please enter a valid number of weeks (1-52):");
+                    console.next(); // Consume the invalid input (otherwise it will infinitely loop)
+                }
+                toolInstance.weeks = console.nextInt();
+                if (toolInstance.weeks < 1 || toolInstance.weeks > 52) {
+                    System.out.println("Please enter an appropriate number of weeks (1-52):");
+                }
+                console.nextLine(); // Consume the newline character
+            } while (toolInstance.weeks < 1 || toolInstance.weeks > 52);
             System.out.println("\nSo far, the parent folder will be named as follows:");
             if (majorYNResponse.equalsIgnoreCase("Y")) {
                 parentFolderName = toolInstance.year + " - " + toolInstance.degree + " - " + toolInstance.major + " (Semester " + toolInstance.semester + ")";
